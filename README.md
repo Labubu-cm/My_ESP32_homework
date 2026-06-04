@@ -4,4 +4,4 @@
 ## 项目结构
 
 - `ex01/` — 实验1：Hello World 程序
-  - `hello.c` — C 语言 Hello World 程序
+  - `hello.c` — C 语言 Hello World 程序，支持键盘输入姓名并显示问候
