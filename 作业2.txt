@@ -1,0 +1,10 @@
+Github使用：
+1. 将GitHub仓库 pull 到本地；
+2. 完成实验1（lab01）要求的所有内容；
+3. 将实验1的工作目录 add 到本地git 库；
+4. commit 本地git库；
+5. 添加实验结果图片；
+6. 将结果 add 到本地git库；
+7. commit 本地git库；
+8. push 最终版本到 Github；
+
