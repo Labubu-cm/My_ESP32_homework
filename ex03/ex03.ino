@@ -30,11 +30,12 @@ enum State {
 
 State currentState = IDLE;
 unsigned long previousMillis = 0;
-int flashIndex = 0;     // 当前闪烁在序列中的索引
+int flashIndex = 0;        // 当前闪烁在序列中的索引
 bool flashIsLong = false;  // 当前闪烁是否为长闪
+int sosCycleCount = 0;     // SOS 循环计数
 
-// SOS 闪光序列: true = 长闪, false = 短闪
-// S = 短,短,短 | O = 长,长,长 | S = 短,短,短
+// SOS 闪光序列: true = 长闪(-), false = 短闪(.)
+// S = .,.,. | O = -,-,- | S = .,.,.
 const bool sosPattern[] = {
   false, false, false,   // S
   true,  true,  true,    // O
@@ -78,12 +79,17 @@ void loop() {
         currentState = FLASH_OFF;
 
         // 串口输出
+        Serial.print("  ");
+        Serial.print(flashIsLong ? "-" : ".");
+        Serial.print("  |  ");
         Serial.print(flashIsLong ? "LONG" : "SHORT");
         Serial.print(" flash #");
         Serial.print(flashIndex + 1);
         Serial.print("/");
         Serial.print(patternLength);
-        Serial.println(" OFF");
+        Serial.print("  |  t=");
+        Serial.print(currentMillis);
+        Serial.println(" ms");
       }
       break;
     }
@@ -98,7 +104,9 @@ void loop() {
           // 进入循环间长停顿
           previousMillis = currentMillis;
           currentState = CYCLE_PAUSE;
-          Serial.println("--- SOS cycle complete ---");
+          sosCycleCount++;
+          Serial.println();
+          Serial.println("--- SOS cycle complete! ---");
         } else {
           // 判断是否进入字母间停顿 (每3个闪之后)
           if (flashIndex % 3 == 0) {
@@ -111,10 +119,17 @@ void loop() {
             previousMillis = currentMillis;
             currentState = FLASH_ON;
 
+            Serial.print("  ");
+            Serial.print(flashIsLong ? "-" : ".");
+            Serial.print("  |  ");
             Serial.print(flashIsLong ? "LONG" : "SHORT");
             Serial.print(" flash #");
             Serial.print(flashIndex + 1);
-            Serial.println(" ON");
+            Serial.print("/");
+            Serial.print(patternLength);
+            Serial.print("  |  t=");
+            Serial.print(currentMillis);
+            Serial.println(" ms");
           }
         }
       }
@@ -129,11 +144,19 @@ void loop() {
         previousMillis = currentMillis;
         currentState = FLASH_ON;
 
-        Serial.print("--- letter gap ---  ");
-        Serial.print(flashIsLong ? "LONG" : "SHORT");
-        Serial.print(" flash #");
+        // 显示字母分隔
+        if (flashIndex == 3) {
+          Serial.print("  | letter gap -> O (long)");
+        } else {
+          Serial.print("  | letter gap -> S (short)");
+        }
+        Serial.print("  |  ");
+        Serial.print(flashIsLong ? "-" : ".");
+        Serial.print("  |  flash #");
         Serial.print(flashIndex + 1);
-        Serial.println(" ON");
+        Serial.print("/9  |  t=");
+        Serial.print(currentMillis);
+        Serial.println(" ms");
       }
       break;
     }
@@ -148,11 +171,21 @@ void loop() {
         previousMillis = currentMillis;
         currentState = FLASH_ON;
 
-        Serial.println("--- New SOS cycle ---");
-        Serial.print(flashIsLong ? "LONG" : "SHORT");
-        Serial.print(" flash #1/");
-        Serial.print(patternLength);
-        Serial.println(" ON");
+        Serial.println();
+        Serial.print("=== SOS Cycle #");
+        Serial.print(sosCycleCount);
+        Serial.println(" ===");
+        Serial.print("SOS pattern: ");
+        Serial.print("... --- ...");
+        Serial.print("  |  t=");
+        Serial.print(currentMillis);
+        Serial.println(" ms");
+        Serial.print("  ");
+        Serial.print(flashIsLong ? "-" : ".");
+        Serial.print("  |  SHORT flash #1/9 ON");
+        Serial.print("  |  t=");
+        Serial.print(currentMillis);
+        Serial.println(" ms");
       }
       break;
     }
