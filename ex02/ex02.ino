@@ -8,11 +8,15 @@ const int ledPin = 2;          // ESP32 板载 LED 引脚 (GPIO2)
 const long interval = 500;     // 闪烁间隔时间 500ms (1Hz = 1000ms周期, 高低各500ms)
 unsigned long previousMillis = 0;  // 上次 LED 状态改变的时间
 int ledState = LOW;            // LED 当前状态
+unsigned long blinkCount = 0;  // 闪烁次数计数器
 
 void setup() {
   Serial.begin(115200);        // 初始化串口通信
   pinMode(ledPin, OUTPUT);     // 设置 LED 引脚为输出模式
+  Serial.println("====================================");
   Serial.println("ex02: millis() 1Hz LED Blink started!");
+  Serial.println("Using millis() instead of delay() for non-blocking timing");
+  Serial.println("====================================");
 }
 
 void loop() {
@@ -30,9 +34,13 @@ void loop() {
     }
     digitalWrite(ledPin, ledState);
 
-    // 串口输出当前 LED 状态和时间信息
+    blinkCount++;
+
+    // 串口输出当前 LED 状态、时间信息和闪烁计数
     Serial.print("LED ");
     Serial.print(ledState == HIGH ? "ON" : "OFF");
+    Serial.print("  |  Blink #");
+    Serial.print(blinkCount);
     Serial.print("  |  System time: ");
     Serial.print(currentMillis);
     Serial.println(" ms");
