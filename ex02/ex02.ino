@@ -30,8 +30,11 @@ void loop() {
     }
     digitalWrite(ledPin, ledState);
 
-    // 串口输出当前 LED 状态
+    // 串口输出当前 LED 状态和时间信息
     Serial.print("LED ");
-    Serial.println(ledState == HIGH ? "ON" : "OFF");
+    Serial.print(ledState == HIGH ? "ON" : "OFF");
+    Serial.print("  |  System time: ");
+    Serial.print(currentMillis);
+    Serial.println(" ms");
   }
 }
