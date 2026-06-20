@@ -80,7 +80,7 @@ void loop() {
 
         // 串口输出
         Serial.print("  ");
-        Serial.print(flashIsLong ? "-" : ".");
+        printFlashingChar(flashIsLong);
         Serial.print("  |  ");
         Serial.print(flashIsLong ? "LONG" : "SHORT");
         Serial.print(" flash #");
@@ -114,22 +114,7 @@ void loop() {
             currentState = LETTER_GAP;
           } else {
             // 继续下一个闪
-            flashIsLong = sosPattern[flashIndex];
-            digitalWrite(ledPin, HIGH);
-            previousMillis = currentMillis;
-            currentState = FLASH_ON;
-
-            Serial.print("  ");
-            Serial.print(flashIsLong ? "-" : ".");
-            Serial.print("  |  ");
-            Serial.print(flashIsLong ? "LONG" : "SHORT");
-            Serial.print(" flash #");
-            Serial.print(flashIndex + 1);
-            Serial.print("/");
-            Serial.print(patternLength);
-            Serial.print("  |  t=");
-            Serial.print(currentMillis);
-            Serial.println(" ms");
+            startNextFlash(currentMillis);
           }
         }
       }
@@ -145,13 +130,13 @@ void loop() {
         currentState = FLASH_ON;
 
         // 显示字母分隔
-        if (flashIndex == 3) {
-          Serial.print("  | letter gap -> O (long)");
-        } else {
-          Serial.print("  | letter gap -> S (short)");
-        }
-        Serial.print("  |  ");
-        Serial.print(flashIsLong ? "-" : ".");
+        char letter = (flashIndex == 3) ? 'O' : 'S';
+        Serial.print("  | letter gap -> ");
+        Serial.print(letter);
+        Serial.print(" (");
+        Serial.print(letter == 'O' ? "long" : "short");
+        Serial.print(")  |  ");
+        printFlashingChar(flashIsLong);
         Serial.print("  |  flash #");
         Serial.print(flashIndex + 1);
         Serial.print("/9  |  t=");
@@ -176,12 +161,12 @@ void loop() {
         Serial.print(sosCycleCount);
         Serial.println(" ===");
         Serial.print("SOS pattern: ");
-        Serial.print("... --- ...");
+        printSOSPattern();
         Serial.print("  |  t=");
         Serial.print(currentMillis);
         Serial.println(" ms");
         Serial.print("  ");
-        Serial.print(flashIsLong ? "-" : ".");
+        printFlashingChar(flashIsLong);
         Serial.print("  |  SHORT flash #1/9 ON");
         Serial.print("  |  t=");
         Serial.print(currentMillis);
@@ -193,4 +178,37 @@ void loop() {
     default:
       break;
   }
+}
+
+// 输出 SOS 模式的文本表示 (... --- ...)
+void printSOSPattern() {
+  for (int i = 0; i < patternLength; i++) {
+    if (i == 3) Serial.print(" ");
+    Serial.print(sosPattern[i] ? "-" : ".");
+  }
+}
+
+// 输出当前闪烁字符 (./-)
+void printFlashingChar(bool isLong) {
+  Serial.print(isLong ? "-" : ".");
+}
+
+// 开始下一个闪烁
+void startNextFlash(unsigned long currentTime) {
+  flashIsLong = sosPattern[flashIndex];
+  digitalWrite(ledPin, HIGH);
+  previousMillis = currentTime;
+  currentState = FLASH_ON;
+
+  Serial.print("  ");
+  printFlashingChar(flashIsLong);
+  Serial.print("  |  ");
+  Serial.print(flashIsLong ? "LONG" : "SHORT");
+  Serial.print(" flash #");
+  Serial.print(flashIndex + 1);
+  Serial.print("/");
+  Serial.print(patternLength);
+  Serial.print("  |  t=");
+  Serial.print(currentTime);
+  Serial.println(" ms");
 }
