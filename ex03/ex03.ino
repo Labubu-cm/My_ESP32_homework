@@ -48,13 +48,6 @@ void setup() {
   pinMode(ledPin, OUTPUT);
   digitalWrite(ledPin, LOW);
 
-  Serial.println("====================================");
-  Serial.println("ex03: SOS Signal with millis()");
-  Serial.println("Pattern: ... --- ... (SOS)");
-  Serial.println("Short flash: 200ms | Long flash: 600ms");
-  Serial.println("Using millis() for non-blocking timing");
-  Serial.println("====================================");
-
   // 开始第一个 SOS 循环
   currentState = FLASH_ON;
   previousMillis = millis();

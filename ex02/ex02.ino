@@ -13,10 +13,6 @@ unsigned long blinkCount = 0;  // 闪烁次数计数器
 void setup() {
   Serial.begin(115200);        // 初始化串口通信
   pinMode(ledPin, OUTPUT);     // 设置 LED 引脚为输出模式
-  Serial.println("====================================");
-  Serial.println("ex02: millis() 1Hz LED Blink started!");
-  Serial.println("Using millis() instead of delay() for non-blocking timing");
-  Serial.println("====================================");
 }
 
 void loop() {
